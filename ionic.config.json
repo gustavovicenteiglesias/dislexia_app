@@ -1,0 +1,7 @@
+{
+  "name": "texto-dislexia",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
