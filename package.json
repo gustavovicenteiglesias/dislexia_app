@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@capacitor/android": "^7.3.0",
     "@capacitor/app": "7.0.1",
-    "@capacitor/core": "7.2.0",
+    "@capacitor/core": "^7.2.0",
     "@capacitor/haptics": "7.0.1",
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
@@ -19,6 +20,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
+    "cropperjs": "^1.5.13",
     "history": "^4.9.0",
     "ionicons": "^7.0.0",
     "react": "^18.2.0",
@@ -44,7 +46,8 @@
     "workbox-streams": "^5.1.4"
   },
   "devDependencies": {
-    "@capacitor/cli": "7.2.0",
+    "@capacitor/cli": "^7.2.0",
+    "@types/cropperjs": "^1.1.5",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
     "eslint": "^8.35.0",
