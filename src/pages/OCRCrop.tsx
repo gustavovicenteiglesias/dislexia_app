@@ -6,20 +6,25 @@ import {
   IonContent,
   IonButton,
   IonText,
+  useIonRouter,
+  IonBackButton,
+  IonButtons,
 } from "@ionic/react";
 import React, { useRef, useState, useEffect } from "react";
 import Cropper from "cropperjs";
 import Tesseract from "tesseract.js";
+import { Camera, CameraResultType } from "@capacitor/camera";
+import { Preferences } from "@capacitor/preferences";
 
-import "cropperjs"; // sin CSS, lo incluís por CDN en public/index.html
+import "cropperjs/dist/cropper.css";
 
 const OCRCrop: React.FC = () => {
   const [imagen, setImagen] = useState<string | null>(null);
-  const [textoOCR, setTextoOCR] = useState("");
   const [procesando, setProcesando] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const cropperRef = useRef<any>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const router = useIonRouter();
 
   const abrirArchivo = () => {
     inputRef.current?.click();
@@ -36,10 +41,22 @@ const OCRCrop: React.FC = () => {
     lector.readAsDataURL(archivo);
   };
 
+  const tomarFoto = async () => {
+    try {
+      const foto = await Camera.getPhoto({
+        resultType: CameraResultType.DataUrl,
+        quality: 90,
+      });
+      setImagen(foto.dataUrl || null);
+    } catch (error) {
+      alert("No se pudo acceder a la cámara.");
+    }
+  };
+
   useEffect(() => {
     if (imageRef.current && imagen) {
       if (cropperRef.current) {
-        cropperRef.current.destroy();
+        cropperRef.current.destroy?.(); // destroy puede no estar tipado
       }
       cropperRef.current = new Cropper(imageRef.current, {
         viewMode: 1,
@@ -68,8 +85,14 @@ const OCRCrop: React.FC = () => {
       const resultado = await Tesseract.recognize(canvas, "spa", {
         logger: (m) => console.log(m),
       });
+      console.log("Texto bruto OCR:", resultado.data.text);
       const texto = resultado.data.text.replace(/\s+/g, " ");
-      setTextoOCR(convertirTexto(texto));
+
+      const textoProcesado = convertirTexto(texto);
+      await Preferences.set({ key: "textoResultado", value: textoProcesado });
+      const { value } = await Preferences.get({ key: "textoResultado" });
+      console.log(value);
+      router.push("/resultado");
     } catch (error) {
       alert("Ocurrió un error al procesar la imagen.");
     } finally {
@@ -81,18 +104,23 @@ const OCRCrop: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>OCR para Dislexia</IonTitle>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/home" />
+          </IonButtons>
+          <IonTitle  style={{ fontFamily: 'OpenDyslexic' }}>DISLECTOR DESDE IMAGEN</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        <IonButton expand="block" onClick={abrirArchivo}>
-            Tomar foto o seleccionar imagen
+        <IonButton expand="block" onClick={abrirArchivo}  style={{ fontFamily: 'OpenDyslexic' }}>
+          Cargar Imagen
+        </IonButton>
+        <IonButton expand="block" color="medium" onClick={tomarFoto} style={{ fontFamily: 'OpenDyslexic' }}>
+          Tomar Foto
         </IonButton>
         <input
           ref={inputRef}
           type="file"
           accept="image/*"
-          capture="environment"
           hidden
           onChange={cargarImagen}
         />
@@ -105,25 +133,9 @@ const OCRCrop: React.FC = () => {
           />
         )}
         {imagen && (
-          <IonButton expand="block" color="success" onClick={procesarImagen}>
+          <IonButton expand="block" color="success" onClick={procesarImagen}  style={{ fontFamily: 'OpenDyslexic' }}>
             {procesando ? "Procesando..." : "Extraer texto"}
           </IonButton>
-        )}
-        {textoOCR && (
-          <>
-            <IonText color="medium">
-              <p>Texto leído:</p>
-            </IonText>
-            <pre
-              style={{
-                fontFamily: "OpenDyslexic",
-                fontSize: "20px",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {textoOCR}
-            </pre>
-          </>
         )}
       </IonContent>
     </IonPage>

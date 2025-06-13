@@ -17,17 +17,17 @@ const Home: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Dislexia App</IonTitle>
+          <IonTitle style={{ fontFamily: 'OpenDyslexic' }}>DISLECTOR</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding" style={{ fontFamily: 'OpenDyslexic' }}>
         <IonText color="medium">
           <h2>¿Qué querés hacer?</h2>
         </IonText>
-        <IonButton expand="block" onClick={() => history.push('/texto')}>
-          ✍️ Escribir o pegar texto
+        <IonButton expand="block" onClick={() => history.push('/texto')} style={{ fontFamily: 'OpenDyslexic' }}>
+          ✍️ Pegar texto
         </IonButton>
-        <IonButton expand="block" onClick={() => history.push('/ocr')}>
+        <IonButton expand="block" onClick={() => history.push('/ocr')} style={{ fontFamily: 'OpenDyslexic' }}>
           📸 Capturar texto desde imagen
         </IonButton>
       </IonContent>
